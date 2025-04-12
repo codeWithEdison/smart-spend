@@ -46,7 +46,13 @@ const ExpensePieChart = ({ transactions, categories }: ExpensePieChartProps) => 
                   outerRadius={90}
                   paddingAngle={2}
                   dataKey="value"
-                  label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                  label={({ name, percent }) => {
+                    // Type guard to handle percent safely
+                    const percentage = typeof percent === 'number' 
+                      ? (percent * 100).toFixed(0) 
+                      : '0';
+                    return `${name} (${percentage}%)`;
+                  }}
                   labelLine={false}
                 >
                   {expensesByCategory.map((entry, index) => (
@@ -54,7 +60,7 @@ const ExpensePieChart = ({ transactions, categories }: ExpensePieChartProps) => 
                   ))}
                 </Pie>
                 <Tooltip 
-                  formatter={(value) => [`$${value.toFixed(2)}`, 'Amount']} 
+                  formatter={(value) => [`$${typeof value === 'number' ? value.toFixed(2) : value}`, 'Amount']} 
                 />
                 <Legend />
               </PieChart>

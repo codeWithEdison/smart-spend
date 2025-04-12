@@ -91,7 +91,7 @@ const Reports = () => {
                       tickFormatter={(value) => `$${value}`}
                     />
                     <Tooltip 
-                      formatter={(value) => [`$${value.toFixed(2)}`, undefined]}
+                      formatter={(value) => [`$${typeof value === 'number' ? value.toFixed(2) : value}`, undefined]}
                     />
                     <Bar 
                       dataKey="income" 
@@ -129,9 +129,13 @@ const Reports = () => {
                       cx="50%"
                       cy="50%"
                       outerRadius={80}
-                      label={({ name, percent }) => 
-                        `${name} (${(percent * 100).toFixed(0)}%)`
-                      }
+                      label={({ name, percent }) => {
+                        // Type guard to ensure percent is treated as a number
+                        const percentage = typeof percent === 'number' 
+                          ? (percent * 100).toFixed(0) 
+                          : '0';
+                        return `${name} (${percentage}%)`;
+                      }}
                       labelLine
                     >
                       {categoryData.map((entry, index) => (
@@ -139,7 +143,9 @@ const Reports = () => {
                       ))}
                     </Pie>
                     <Tooltip 
-                      formatter={(value) => [formatCurrency(value as number), 'Amount']}
+                      formatter={(value) => {
+                        return [formatCurrency(typeof value === 'number' ? value : 0), 'Amount'];
+                      }}
                     />
                   </PieChart>
                 </ResponsiveContainer>

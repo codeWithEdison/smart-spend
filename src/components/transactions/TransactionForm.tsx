@@ -43,24 +43,37 @@ interface TransactionFormProps {
   onComplete?: () => void;
 }
 
+// Define the form values type to match expected types
+interface TransactionFormValues {
+  amount: number;
+  type: TransactionType;
+  category: string;
+  description: string;
+  date: Date;
+}
+
 const TransactionForm = ({ editTransaction, onComplete }: TransactionFormProps) => {
   const [open, setOpen] = useState(false);
   const { categories, addTransaction, updateTransaction } = useBudget();
   
-  const defaultValues = editTransaction 
+  // Create default values with the right types
+  const defaultValues: TransactionFormValues = editTransaction 
     ? { 
-        ...editTransaction, 
-        date: new Date(editTransaction.date) 
+        amount: editTransaction.amount,
+        type: editTransaction.type,
+        category: editTransaction.category,
+        description: editTransaction.description,
+        date: new Date(editTransaction.date)
       } 
     : {
         amount: 0,
-        type: 'expense' as TransactionType,
+        type: 'expense',
         category: '',
         description: '',
         date: new Date()
       };
     
-  const form = useForm<Omit<Transaction, 'id'> & { date: Date }>({
+  const form = useForm<TransactionFormValues>({
     defaultValues
   });
   
@@ -69,7 +82,7 @@ const TransactionForm = ({ editTransaction, onComplete }: TransactionFormProps) 
   // Filter categories based on transaction type
   const filteredCategories = categories.filter(c => c.type === transactionType);
   
-  const onSubmit = (data: Omit<Transaction, 'id'> & { date: Date }) => {
+  const onSubmit = (data: TransactionFormValues) => {
     try {
       const transactionData = {
         ...data,
@@ -89,6 +102,7 @@ const TransactionForm = ({ editTransaction, onComplete }: TransactionFormProps) 
       }
       
       setOpen(false);
+      // Reset with correct types
       form.reset(defaultValues);
       
       if (onComplete) {
