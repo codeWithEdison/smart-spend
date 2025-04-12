@@ -125,3 +125,30 @@ export const getCurrentMonthTransactions = (
     return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
   });
 };
+
+// Get transactions by date range
+export const getTransactionsByDateRange = (
+  transactions: Transaction[],
+  startDate: Date,
+  endDate?: Date
+): Transaction[] => {
+  return transactions.filter(t => {
+    const transactionDate = new Date(t.date);
+    if (endDate) {
+      // Set end date to end of day for inclusive range
+      const endOfDay = new Date(endDate);
+      endOfDay.setHours(23, 59, 59, 999);
+      return transactionDate >= startDate && transactionDate <= endOfDay;
+    }
+    return transactionDate >= startDate;
+  });
+};
+
+// Format date range for display
+export const formatDateRange = (startDate: Date, endDate?: Date): string => {
+  const start = formatDate(startDate.toISOString());
+  if (!endDate) return `From ${start}`;
+  
+  const end = formatDate(endDate.toISOString());
+  return `${start} - ${end}`;
+};
