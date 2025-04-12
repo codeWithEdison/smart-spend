@@ -1,8 +1,9 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 // Define types
 export type TransactionType = 'income' | 'expense';
+export type LoanType = 'borrowed' | 'lent';
+export type LoanStatus = 'active' | 'paid' | 'defaulted';
 
 export interface Transaction {
   id: string;
@@ -21,18 +22,52 @@ export interface Category {
   color: string;
 }
 
+export interface Loan {
+  id: string;
+  amount: number;
+  type: LoanType;
+  personName: string;
+  description: string;
+  startDate: string;
+  dueDate: string;
+  interestRate: number;
+  status: LoanStatus;
+  paymentHistory: Payment[];
+}
+
+export interface Payment {
+  id: string;
+  amount: number;
+  date: string;
+  note: string;
+}
+
 interface BudgetContextType {
+  // Transactions
   transactions: Transaction[];
   categories: Category[];
   addTransaction: (transaction: Omit<Transaction, 'id'>) => void;
   updateTransaction: (transaction: Transaction) => void;
   deleteTransaction: (id: string) => void;
+  
+  // Categories
   addCategory: (category: Omit<Category, 'id'>) => void;
   updateCategory: (category: Category) => void;
   deleteCategory: (id: string) => void;
+  
+  // Stats
   totalIncome: number;
   totalExpenses: number;
   savingsRate: number;
+  
+  // Loans
+  loans: Loan[];
+  addLoan: (loan: Omit<Loan, 'id' | 'paymentHistory'>) => void;
+  updateLoan: (loan: Loan) => void;
+  deleteLoan: (id: string) => void;
+  addPaymentToLoan: (loanId: string, payment: Omit<Payment, 'id'>) => void;
+  totalBorrowed: number;
+  totalLent: number;
 }
 
 const BudgetContext = createContext<BudgetContextType | undefined>(undefined);
@@ -93,11 +128,47 @@ const sampleTransactions: Transaction[] = [
   }
 ];
 
+// Sample loans for demo
+const sampleLoans: Loan[] = [
+  {
+    id: '1',
+    amount: 1000,
+    type: 'borrowed',
+    personName: 'Alex Brown',
+    description: 'Emergency car repair',
+    startDate: new Date(2023, 2, 15).toISOString(),
+    dueDate: new Date(2023, 5, 15).toISOString(),
+    interestRate: 5,
+    status: 'active',
+    paymentHistory: [
+      {
+        id: '1',
+        amount: 200,
+        date: new Date(2023, 3, 15).toISOString(),
+        note: 'First payment'
+      }
+    ]
+  },
+  {
+    id: '2',
+    amount: 500,
+    type: 'lent',
+    personName: 'Jamie Smith',
+    description: 'Home improvement project',
+    startDate: new Date(2023, 1, 10).toISOString(),
+    dueDate: new Date(2023, 4, 10).toISOString(),
+    interestRate: 0,
+    status: 'active',
+    paymentHistory: []
+  }
+];
+
 export const BudgetProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [loans, setLoans] = useState<Loan[]>([]);
   
-  // Calculate derived values
+  // Calculate derived values for transactions
   const totalIncome = transactions
     .filter(t => t.type === 'income')
     .reduce((sum, t) => sum + t.amount, 0);
@@ -109,11 +180,27 @@ export const BudgetProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const savingsRate = totalIncome > 0 
     ? Math.round(((totalIncome - totalExpenses) / totalIncome) * 100) 
     : 0;
+  
+  // Calculate derived values for loans
+  const totalBorrowed = loans
+    .filter(loan => loan.type === 'borrowed' && loan.status === 'active')
+    .reduce((sum, loan) => {
+      const paidAmount = loan.paymentHistory.reduce((total, payment) => total + payment.amount, 0);
+      return sum + (loan.amount - paidAmount);
+    }, 0);
+    
+  const totalLent = loans
+    .filter(loan => loan.type === 'lent' && loan.status === 'active')
+    .reduce((sum, loan) => {
+      const paidAmount = loan.paymentHistory.reduce((total, payment) => total + payment.amount, 0);
+      return sum + (loan.amount - paidAmount);
+    }, 0);
 
   // Load data from localStorage on initial render
   useEffect(() => {
     const storedTransactions = localStorage.getItem('transactions');
     const storedCategories = localStorage.getItem('categories');
+    const storedLoans = localStorage.getItem('loans');
     
     if (storedTransactions) {
       setTransactions(JSON.parse(storedTransactions));
@@ -128,6 +215,13 @@ export const BudgetProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       // Use default categories
       setCategories(defaultCategories);
     }
+    
+    if (storedLoans) {
+      setLoans(JSON.parse(storedLoans));
+    } else {
+      // Use sample loans
+      setLoans(sampleLoans);
+    }
   }, []);
 
   // Save data to localStorage when it changes
@@ -138,6 +232,10 @@ export const BudgetProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   useEffect(() => {
     localStorage.setItem('categories', JSON.stringify(categories));
   }, [categories]);
+  
+  useEffect(() => {
+    localStorage.setItem('loans', JSON.stringify(loans));
+  }, [loans]);
 
   // Transaction CRUD operations
   const addTransaction = (transaction: Omit<Transaction, 'id'>) => {
@@ -176,19 +274,65 @@ export const BudgetProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const deleteCategory = (id: string) => {
     setCategories(prev => prev.filter(c => c.id !== id));
   };
+  
+  // Loan CRUD operations
+  const addLoan = (loan: Omit<Loan, 'id' | 'paymentHistory'>) => {
+    const newLoan = {
+      ...loan,
+      id: Date.now().toString(),
+      paymentHistory: []
+    };
+    setLoans(prev => [...prev, newLoan]);
+  };
+
+  const updateLoan = (loan: Loan) => {
+    setLoans(prev => 
+      prev.map(l => l.id === loan.id ? loan : l)
+    );
+  };
+
+  const deleteLoan = (id: string) => {
+    setLoans(prev => prev.filter(l => l.id !== id));
+  };
+  
+  const addPaymentToLoan = (loanId: string, payment: Omit<Payment, 'id'>) => {
+    const newPayment = {
+      ...payment,
+      id: Date.now().toString()
+    };
+    
+    setLoans(prev => 
+      prev.map(loan => {
+        if (loan.id === loanId) {
+          return {
+            ...loan,
+            paymentHistory: [...loan.paymentHistory, newPayment]
+          };
+        }
+        return loan;
+      })
+    );
+  };
 
   const value = {
     transactions,
     categories,
+    loans,
     addTransaction,
     updateTransaction,
     deleteTransaction,
     addCategory,
     updateCategory,
     deleteCategory,
+    addLoan,
+    updateLoan,
+    deleteLoan,
+    addPaymentToLoan,
     totalIncome,
     totalExpenses,
-    savingsRate
+    savingsRate,
+    totalBorrowed,
+    totalLent
   };
 
   return (

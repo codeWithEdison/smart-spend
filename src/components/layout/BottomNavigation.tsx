@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, ReceiptText, PieChart, Settings, CreditCard, TrendingUp } from 'lucide-react';
+import { LayoutDashboard, ReceiptText, CreditCard, Settings, Landmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const BottomNavigation = () => {
@@ -10,6 +10,7 @@ const BottomNavigation = () => {
     { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={20} /> },
     { name: 'Transactions', path: '/transactions', icon: <ReceiptText size={20} /> },
     { name: 'Budgets', path: '/budgets', icon: <CreditCard size={20} /> },
+    { name: 'Loans', path: '/loans', icon: <Landmark size={20} /> },
     { name: 'Settings', path: '/settings', icon: <Settings size={20} /> },
   ];
 
