@@ -1,73 +1,146 @@
-# Welcome to your Lovable project
 
-## Project info
 
-**URL**: https://lovable.dev/projects/358546c2-eb04-4431-8704-29e02d902c18
+# **SmartSpend - Personal Budget Management App**
 
-## How can I edit this code?
+Welcome to **SmartSpend**, an intuitive and user-friendly Progressive Web App (PWA) designed to help you track, manage, and visualize your personal finances. Whether you're a student, a professional, or anyone looking to get better at budgeting, SmartSpend is here to simplify the process with powerful features and an easy-to-use interface.
 
-There are several ways of editing your application.
+**Visit SmartSpend App:** [smartspend.codewithedison.com](https://smartspend.codewithedison.com/)
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/358546c2-eb04-4431-8704-29e02d902c18) and start prompting.
+## 🚀 **Features**
 
-Changes made via Lovable will be committed automatically to this repo.
+- **User Authentication**
+  - Sign up/log in with email & password
+  - Optionally use Google/Apple sign-in for quicker access
+- **Budget Management**
+  - Create and categorize income and expenses (e.g., Food, Rent, Entertainment)
+  - Set monthly or weekly budgets per category to track your financial goals
+- **Smart Dashboard**
+  - Overview of total income vs expenses
+  - Category-wise spending breakdown (pie chart & bar graphs)
+  - Budget utilization and savings progress
+- **Transaction History**
+  - View, search, filter, edit, and delete transactions
+- **Financial Reports & Insights**
+  - Monthly/weekly reports with visualizations
+  - Tips based on your spending behavior
+- **Loan Management**
+  - Track loan amounts, interest rates, and repayment schedules
+  - Set reminders for upcoming payments
+  - Visualize loan balance over time
+- **PWA Features**
+  - Offline access for full functionality
+  - Installable to the home screen for easy access
+  - Fast, responsive performance across all devices
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 💻 **Tech Stack**
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- **Frontend**: Flutter (Web) or React.js for PWA
+- **Charts & Visualization**: `fl_chart` (Flutter) or `Chart.js` (React)
+- **Local Storage**: `Hive`, `IndexedDB`, or Firebase for cloud sync
+- **PWA Tools**: Service Workers, manifest.json for offline capability and installation
+- **State Management**: `Provider`, `Riverpod`, or `Redux`
+- **Hosting**: Firebase Hosting, Vercel, or Netlify
 
-Follow these steps:
+---
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 🛠 **Installation & Setup**
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### **Prerequisites**
 
-# Step 3: Install the necessary dependencies.
-npm i
+- Node.js (for React.js version)
+- Flutter SDK (for Flutter Web version)
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### **Cloning the Repository**
+
+To get started with SmartSpend, clone this repository to your local machine:
+
+```bash
+git clone https://github.com/codeWithEdison/smart-spend.git
+cd smart-spend
 ```
 
-**Edit a file directly in GitHub**
+### **For React.js Version**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. Install the dependencies:
 
-**Use GitHub Codespaces**
+```bash
+npm install
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+2. Start the local development server:
 
-## What technologies are used for this project?
+```bash
+npm start
+```
 
-This project is built with:
+3. Visit [http://localhost:3000](http://localhost:3000) to see the app in action.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### **For Flutter Web Version**
 
-## How can I deploy this project?
+1. Ensure you have Flutter installed and configured for web development.
+2. Run the following command to get the dependencies:
 
-Simply open [Lovable](https://lovable.dev/projects/358546c2-eb04-4431-8704-29e02d902c18) and click on Share -> Publish.
+```bash
+flutter pub get
+```
 
-## Can I connect a custom domain to my Lovable project?
+3. Run the app locally:
 
-Yes it is!
+```bash
+flutter run -d chrome
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+4. Visit [http://localhost:8000](http://localhost:8000) to see the app.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+---
+
+## 🎨 **UI/UX Design**
+
+- A clean, minimalistic mobile-first design, with a focus on ease of use and clarity
+- Responsive, data-driven dashboard to quickly overview your financial health
+- Simple workflows for adding transactions, managing budgets, loan tracking, and viewing reports
+- Visualizations to make financial data digestible, with charts and graphs
+
+---
+
+## 🔄 **PWA Features**
+
+- **Offline Access**: Full functionality even without an internet connection
+- **Home Screen Installability**: Add SmartSpend to your device’s home screen for quick access
+- **Fast Loading**: Optimized for a smooth experience on mobile and desktop
+
+---
+
+## 🤖 **Development Phases**
+
+1. **UI Design & Prototyping**
+2. **Budget Management Features Implementation**
+3. **Loan Management Integration**
+4. **Dashboard Integration**
+5. **Transaction History & Reports**
+6. **PWA Features Integration**
+7. **Testing & Optimization**
+
+---
+
+## 📝 **License**
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 💬 **Feedback & Contributions**
+
+We welcome contributions to make SmartSpend better! If you find bugs, have suggestions, or want to contribute, feel free to fork the repo and submit a pull request. For issues, please open an issue on GitHub.
+
+---
+
+### **Follow CodeWithEdison**
+- **Website**: [codewithedison.com](https://codewithedison.com/)
+- **GitHub**: [@codeWithEdison](https://github.com/codeWithEdison)
+- **Twitter**: [@codewithedison](https://twitter.com/codewithedison)
+

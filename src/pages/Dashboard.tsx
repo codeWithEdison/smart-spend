@@ -98,7 +98,7 @@ const Dashboard = () => {
         />
 
         {/* Legacy Stats Overview - can be removed if you prefer the new stats */}
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        {/* <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             title="Total Income"
             value={formatCurrency(totalIncome)}
@@ -124,7 +124,7 @@ const Dashboard = () => {
             icon={<PiggyBank size={18} />}
             className="border-l-4 border-budget-saving"
           />
-        </div>
+        </div> */}
 
         {/* Main Dashboard Content */}
         <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">

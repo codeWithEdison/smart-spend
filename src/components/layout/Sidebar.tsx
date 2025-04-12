@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, ReceiptText, PieChart, Settings, CreditCard, TrendingUp, X } from 'lucide-react';
+import { LayoutDashboard, ReceiptText, PieChart, Settings, CreditCard, TrendingUp, X, Landmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -18,8 +18,10 @@ const Sidebar = ({ isOpen }: SidebarProps) => {
     { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={20} /> },
     { name: 'Transactions', path: '/transactions', icon: <ReceiptText size={20} /> },
     { name: 'Budgets', path: '/budgets', icon: <CreditCard size={20} /> },
-    { name: 'Reports', path: '/reports', icon: <PieChart size={20} /> },
     { name: 'Goals', path: '/goals', icon: <TrendingUp size={20} /> },
+    { name: 'Loans', path: '/loans', icon: <Landmark size={20} /> },
+
+    { name: 'Reports', path: '/reports', icon: <PieChart size={20} /> },
     { name: 'Settings', path: '/settings', icon: <Settings size={20} /> },
   ];
 
