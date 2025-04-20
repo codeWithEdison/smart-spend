@@ -1,5 +1,3 @@
-
-
 # **SmartSpend - Personal Budget Management App**
 
 Welcome to **SmartSpend**, an intuitive and user-friendly Progressive Web App (PWA) designed to help you track, manage, and visualize your personal finances. Whether you're a student, a professional, or anyone looking to get better at budgeting, SmartSpend is here to simplify the process with powerful features and an easy-to-use interface.
@@ -144,3 +142,57 @@ We welcome contributions to make SmartSpend better! If you find bugs, have sugge
 - **GitHub**: [@codeWithEdison](https://github.com/codeWithEdison)
 - **Twitter**: [@codewithedison](https://twitter.com/codewithedison)
 
+## 🚀 **iOS Development Guide**
+
+### **Prerequisites**
+
+- **macOS** (required for iOS development)
+- **Xcode** (latest version from App Store)
+- **Node.js** and **npm**
+- **Capacitor CLI** installed globally
+- **iOS Simulator** or physical iOS device
+
+### **Setting Up for iOS**
+
+1. **Install Capacitor iOS Platform**
+```bash
+npm install @capacitor/ios
+npx cap sync
+```
+
+2. **Open the Project in Xcode**
+```bash
+npx cap open ios
+```
+
+3. **Configure Signing**
+- Open Xcode
+- Select your target in the project navigator
+- Go to "Signing & Capabilities" tab
+- Select your Team for code signing
+- Choose a unique Bundle Identifier
+
+### **Running the App**
+
+#### **In Simulator**
+```bash
+npx cap run ios
+```
+
+#### **On Physical Device**
+- Connect your iOS device to your Mac
+- In Xcode, select your device from the run destination dropdown
+- Click the "Run" button
+
+### **Troubleshooting**
+
+- Ensure Xcode Command Line Tools are installed
+- Check Capacitor and iOS platform compatibility
+- Verify code signing and provisioning profiles
+- Clean the project in Xcode if you encounter build issues
+
+### **Deployment Considerations**
+
+- Use Xcode Archive and Distribute functionality for App Store submission
+- Ensure your app meets Apple's App Store guidelines
+- Test thoroughly on different iOS devices and versions
