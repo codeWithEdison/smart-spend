@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { BudgetProvider } from "@/context/BudgetContext";
+import { ThemeProvider } from "@/hooks/use-theme";
 
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
@@ -20,23 +21,24 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <BudgetProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/transactions" element={<Transactions />} />
-            <Route path="/budgets" element={<Budgets />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/goals" element={<Goals />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/loans" element={<Loans />} />
-
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <ThemeProvider defaultTheme="system">
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/transactions" element={<Transactions />} />
+              <Route path="/budgets" element={<Budgets />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/goals" element={<Goals />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/loans" element={<Loans />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </ThemeProvider>
     </BudgetProvider>
   </QueryClientProvider>
 );

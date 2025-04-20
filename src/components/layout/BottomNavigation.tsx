@@ -1,10 +1,14 @@
 
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useState } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import { LayoutDashboard, ReceiptText, CreditCard, Settings, Landmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 const BottomNavigation = () => {
+  const location = useLocation();
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
   // We'll use a subset of the main navigation items to avoid overcrowding
   const navItems = [
     { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={20} /> },
@@ -15,25 +19,80 @@ const BottomNavigation = () => {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-sidebar border-t border-border z-30 md:hidden">
-      <nav className="flex justify-around items-center h-16">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) =>
-              cn(
-                "flex flex-col items-center justify-center px-3 py-2 rounded-md transition-colors w-full h-full",
-                isActive
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-primary"
-              )
+    <div className="fixed bottom-0 left-0 right-0 z-30 md:hidden">
+      <nav className="glass dark:glass-dark border-t border-white/20 shadow-lg">
+        <div className="flex justify-around items-center h-16 px-2 relative">
+          {/* Animated background indicator for active item */}
+          {navItems.map((item, index) => {
+            const isActive = location.pathname === item.path;
+            if (isActive) {
+              return (
+                <motion.div
+                  key={`bg-${item.path}`}
+                  className="absolute inset-y-0 w-1/5 bg-primary/10 dark:bg-primary/20 rounded-xl"
+                  layoutId="activeNavBackground"
+                  initial={false}
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 30
+                  }}
+                  style={{
+                    left: `${index * 20}%`,
+                  }}
+                />
+              );
             }
-          >
-            <span className="flex items-center justify-center">{item.icon}</span>
-            <span className="text-xs mt-1">{item.name}</span>
-          </NavLink>
-        ))}
+            return null;
+          })}
+
+          {navItems.map((item, index) => {
+            const isActive = location.pathname === item.path;
+            const isHovered = hoveredIndex === index;
+
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={cn(
+                  "flex flex-col items-center justify-center w-full py-1 rounded-xl relative z-10"
+                )}
+                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
+              >
+                <div 
+                  className={cn(
+                    "flex flex-col items-center transition-all duration-300 transform",
+                    isActive && "text-primary font-medium",
+                    !isActive && "text-muted-foreground"
+                  )}
+                >
+                  <motion.div
+                    whileTap={{ scale: 0.9 }}
+                    animate={{ 
+                      y: isActive || isHovered ? -4 : 0,
+                      scale: isActive ? 1.1 : 1
+                    }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {item.icon}
+                  </motion.div>
+                  
+                  <motion.span 
+                    className="text-xs mt-1"
+                    animate={{ 
+                      opacity: isActive ? 1 : 0.7,
+                      y: isActive || isHovered ? 0 : 2
+                    }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {item.name}
+                  </motion.span>
+                </div>
+              </NavLink>
+            );
+          })}
+        </div>
       </nav>
     </div>
   );
