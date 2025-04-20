@@ -1,11 +1,13 @@
 
 import React, { useEffect, useRef } from 'react';
-import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, ReceiptText, PieChart, Settings, CreditCard, TrendingUp, X, Landmark, Moon, Sun, Menu } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, ReceiptText, PieChart, Settings, CreditCard, TrendingUp, X, Landmark, Moon, Sun, Menu, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTheme } from '@/hooks/use-theme';
+import { useAuth } from '@/context/AuthContext';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -15,6 +17,8 @@ const Sidebar = ({ isOpen }: SidebarProps) => {
   const isMobile = useIsMobile();
   const sidebarRef = useRef<HTMLElement>(null);
   const { theme, setTheme } = useTheme();
+  const { signOut, user } = useAuth();
+  const navigate = useNavigate();
   
   const navItems = [
     { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={20} className="text-blue-500" /> },
@@ -25,6 +29,15 @@ const Sidebar = ({ isOpen }: SidebarProps) => {
     { name: 'Reports', path: '/reports', icon: <PieChart size={20} className="text-indigo-500" /> },
     { name: 'Settings', path: '/settings', icon: <Settings size={20} className="text-slate-500" /> },
   ];
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   // Handle click outside to close sidebar on mobile
   useEffect(() => {
@@ -104,21 +117,91 @@ const Sidebar = ({ isOpen }: SidebarProps) => {
           ))}
         </nav>
 
-        {/* Theme toggle button at bottom */}
-        {isOpen && (
-          <div className="p-4 border-t border-sidebar-border/50 flex justify-between items-center">
-            <span className="text-sm font-medium text-muted-foreground">Theme</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="icon-animate"
-              aria-label="Toggle Theme"
-            >
-              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-            </Button>
-          </div>
-        )}
+        {/* Footer with theme toggle and logout */}
+        <div className="p-4 border-t border-sidebar-border/50 space-y-3">
+          {/* Theme toggle */}
+          {isOpen ? (
+            <div className="flex justify-between items-center mb-3">
+              <span className="text-sm font-medium text-muted-foreground">Theme</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="icon-animate"
+                aria-label="Toggle Theme"
+              >
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </Button>
+            </div>
+          ) : (
+            <div className="flex justify-center md:block hidden mb-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="icon-animate"
+                aria-label="Toggle Theme"
+              >
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </Button>
+            </div>
+          )}
+          
+          {/* User info and logout button */}
+          {user && isOpen && (
+            <div className="border-t border-sidebar-border/50 pt-3">
+              <div className="flex items-center justify-between">
+                <div className="flex-1 truncate">
+                  <p className="text-sm font-medium truncate">{user.email}</p>
+                </div>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon" className="icon-animate" aria-label="Log Out">
+                      <LogOut size={18} className="text-muted-foreground hover:text-primary" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Log out?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to log out of your account?
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleSignOut}>Log out</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            </div>
+          )}
+
+          {/* Logout button for collapsed sidebar */}
+          {user && !isOpen && (
+            <div className="flex justify-center border-t border-sidebar-border/50 pt-3 md:block hidden">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="ghost" size="icon" className="icon-animate" aria-label="Log Out">
+                    <LogOut size={18} className="text-muted-foreground hover:text-primary" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Log out?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to log out of your account?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleSignOut}>Log out</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          )}
+        </div>
       </div>
     </aside>
   );
