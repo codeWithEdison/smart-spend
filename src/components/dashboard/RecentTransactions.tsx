@@ -5,15 +5,13 @@ import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
 import { Transaction } from '@/context/BudgetContext';
 import { formatCurrency, formatDate, getTransactionColor } from '@/utils/budgetUtils';
 import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 interface RecentTransactionsProps {
   transactions: Transaction[];
 }
 
 const RecentTransactions = ({ transactions }: RecentTransactionsProps) => {
-  const navigate = useNavigate();
-  
   // Get 5 most recent transactions
   const recentTransactions = [...transactions]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -25,10 +23,10 @@ const RecentTransactions = ({ transactions }: RecentTransactionsProps) => {
         <CardTitle className="text-lg">Recent Transactions</CardTitle>
         <Button 
           variant="link" 
-          onClick={() => navigate('/transactions')}
+          asChild
           className="text-primary"
         >
-          View all
+          <Link to="/transactions">View all</Link>
         </Button>
       </CardHeader>
       <CardContent>
