@@ -1,17 +1,66 @@
-
 import { createClient } from '@supabase/supabase-js';
 
 // These env variables are automatically available via Lovable's Supabase integration
-// Fallback to empty strings to prevent errors during build/init time
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Check if the required environment variables are available
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Supabase URL or Anon Key is missing. Make sure your Supabase integration is properly configured in Lovable.');
+// Create a mock Supabase client when credentials are missing (development/build time)
+export const supabase = (supabaseUrl && supabaseAnonKey) 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : createMockSupabaseClient();
+
+// Helper function to create a mock Supabase client
+function createMockSupabaseClient() {
+  console.error(
+    'Supabase URL or Anon Key is missing. Using a mock client. ' +
+    'Make sure your Supabase integration is properly configured in Lovable.'
+  );
+  
+  // Return a mock client that won't throw errors but won't work with real data
+  return {
+    auth: {
+      getUser: async () => ({ data: { user: null }, error: null }),
+      getSession: async () => ({ data: { session: null }, error: null }),
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+      signUp: async () => ({ error: new Error('Mock client: Supabase not configured') }),
+      signInWithPassword: async () => ({ error: new Error('Mock client: Supabase not configured') }),
+      signOut: async () => ({ error: null }),
+      resetPasswordForEmail: async () => ({ error: null }),
+    },
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          order: () => ({
+            in: () => ({ data: [], error: null }),
+            data: [],
+            error: null
+          }),
+          in: () => ({ data: [], error: null }),
+          data: [],
+          error: null
+        }),
+        single: () => ({ data: null, error: null }),
+        data: [],
+        error: null
+      }),
+      insert: () => ({
+        select: () => ({
+          single: () => ({ data: null, error: null })
+        })
+      }),
+      update: () => ({
+        eq: () => ({
+          select: () => ({
+            single: () => ({ data: null, error: null })
+          })
+        })
+      }),
+      delete: () => ({
+        eq: () => ({ error: null })
+      })
+    })
+  };
 }
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Helper types for Supabase tables
 export type Tables = {
