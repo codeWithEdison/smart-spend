@@ -1,3 +1,4 @@
+
 import { createClient } from '@supabase/supabase-js';
 
 // These env variables are automatically available via Lovable's Supabase integration
@@ -16,7 +17,52 @@ function createMockSupabaseClient() {
     'Make sure your Supabase integration is properly configured in Lovable.'
   );
   
-  // Return a mock client that won't throw errors but won't work with real data
+  // Creating a more comprehensive mock client that handles all the chaining methods used in our services
+  // This mock follows the PostgrestBuilder pattern while returning empty data
+  const createQueryBuilder = () => {
+    const methods = {
+      select: () => methods,
+      insert: () => methods,
+      update: () => methods,
+      delete: () => methods,
+      eq: () => methods,
+      neq: () => methods,
+      gt: () => methods,
+      lt: () => methods,
+      gte: () => methods,
+      lte: () => methods,
+      like: () => methods,
+      ilike: () => methods,
+      is: () => methods,
+      in: () => methods,
+      contains: () => methods,
+      containedBy: () => methods,
+      rangeLt: () => methods,
+      rangeGt: () => methods,
+      rangeGte: () => methods,
+      rangeLte: () => methods,
+      rangeAdjacent: () => methods,
+      overlaps: () => methods,
+      textSearch: () => methods,
+      match: () => methods,
+      not: () => methods,
+      filter: () => methods,
+      or: () => methods,
+      and: () => methods,
+      order: () => methods,
+      limit: () => methods,
+      range: () => methods,
+      single: () => ({ data: null, error: null }),
+      maybeSingle: () => ({ data: null, error: null }),
+      csv: () => ({ data: '', error: null }),
+      data: null,
+      error: null
+    };
+    
+    return methods;
+  };
+  
+  // Return a mock client that implements all methods our services use
   return {
     auth: {
       getUser: async () => ({ data: { user: null }, error: null }),
@@ -27,38 +73,7 @@ function createMockSupabaseClient() {
       signOut: async () => ({ error: null }),
       resetPasswordForEmail: async () => ({ error: null }),
     },
-    from: () => ({
-      select: () => ({
-        eq: () => ({
-          order: () => ({
-            in: () => ({ data: [], error: null }),
-            data: [],
-            error: null
-          }),
-          in: () => ({ data: [], error: null }),
-          data: [],
-          error: null
-        }),
-        single: () => ({ data: null, error: null }),
-        data: [],
-        error: null
-      }),
-      insert: () => ({
-        select: () => ({
-          single: () => ({ data: null, error: null })
-        })
-      }),
-      update: () => ({
-        eq: () => ({
-          select: () => ({
-            single: () => ({ data: null, error: null })
-          })
-        })
-      }),
-      delete: () => ({
-        eq: () => ({ error: null })
-      })
-    })
+    from: () => createQueryBuilder()
   };
 }
 
