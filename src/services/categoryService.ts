@@ -19,10 +19,12 @@ export const fetchCategories = async () => {
 
     if (error) throw error;
     
-    return data as unknown as Category[];
+    // Ensure we return an empty array if no data
+    return (data || []) as Category[];
   } catch (error) {
     console.error('Error fetching categories:', error);
-    throw error;
+    // Return empty array instead of throwing to prevent UI errors
+    return [];
   }
 };
 

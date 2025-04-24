@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Dialog, 
   DialogContent, 
@@ -82,6 +82,13 @@ const TransactionForm = ({ editTransaction, onComplete }: TransactionFormProps) 
   // Filter categories based on transaction type
   const filteredCategories = categories.filter(c => c.type === transactionType);
   
+  // Log to debug
+  useEffect(() => {
+    console.log('All categories:', categories);
+    console.log('Filtered categories:', filteredCategories);
+    console.log('Current transaction type:', transactionType);
+  }, [categories, filteredCategories, transactionType]);
+  
   const onSubmit = (data: TransactionFormValues) => {
     try {
       const transactionData = {
@@ -113,7 +120,7 @@ const TransactionForm = ({ editTransaction, onComplete }: TransactionFormProps) 
       console.error(error);
     }
   };
-  
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -197,7 +204,7 @@ const TransactionForm = ({ editTransaction, onComplete }: TransactionFormProps) 
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {filteredCategories.length > 0 ? (
+                      {filteredCategories && filteredCategories.length > 0 ? (
                         filteredCategories.map(category => (
                           <SelectItem key={category.id} value={category.name}>
                             {category.name}
