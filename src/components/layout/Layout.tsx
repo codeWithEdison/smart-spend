@@ -2,6 +2,7 @@
 import { ReactNode } from 'react';
 import Sidebar from './Sidebar';
 import { MobileHeader } from './MobileHeader';
+import BottomNavigation from './BottomNavigation';
 
 const Layout = ({ children }: { children: ReactNode }) => {
   return (
@@ -15,9 +16,12 @@ const Layout = ({ children }: { children: ReactNode }) => {
       </div>
       
       {/* Main Content */}
-      <main className="flex-1 p-4 md:p-8 bg-background">
+      <main className="flex-1 p-4 md:p-8 bg-background pb-20 md:pb-8">
         {children}
       </main>
+
+      {/* Bottom Navigation - visible only on mobile */}
+      <BottomNavigation />
     </div>
   );
 };

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
@@ -12,7 +11,6 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Loader2 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 
 const loginSchema = z.object({
@@ -53,22 +51,6 @@ const Login = () => {
       confirmPassword: '',
     },
   });
-
-  const handleGoogleSignIn = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-      });
-      if (error) throw error;
-    } catch (error) {
-      console.error('Google sign in error:', error);
-      toast({
-        title: "Sign in failed",
-        description: "Failed to sign in with Google",
-        variant: "destructive",
-      });
-    }
-  };
 
   const onLoginSubmit = async (data: LoginFormValues) => {
     setIsSubmitting(true);
@@ -120,31 +102,6 @@ const Login = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button 
-              onClick={handleGoogleSignIn} 
-              type="button" 
-              variant="outline" 
-              className="w-full mb-4"
-            >
-              <img 
-                src="https://www.google.com/favicon.ico" 
-                alt="Google" 
-                className="w-4 h-4 mr-2" 
-              />
-              Continue with Google
-            </Button>
-            
-            <div className="relative mb-4">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Or continue with
-                </span>
-              </div>
-            </div>
-            
             <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="login">Login</TabsTrigger>
