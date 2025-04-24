@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { BudgetProvider } from "@/context/BudgetContext";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { ThemeProvider } from "@/hooks/use-theme";
+import { ProfileProvider } from "@/context/ProfileContext";
 
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
@@ -36,66 +36,68 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
-      <ThemeProvider defaultTheme="system">
-        <TooltipProvider>
-          <AuthProvider>
-            <BudgetProvider>
-              <Toaster />
-              <Sonner />
-              <Routes>
-                {/* Public routes */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                
-                {/* Protected routes */}
-                <Route path="/" element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } />
-                <Route path="/transactions" element={
-                  <ProtectedRoute>
-                    <Transactions />
-                  </ProtectedRoute>
-                } />
-                <Route path="/budgets" element={
-                  <ProtectedRoute>
-                    <Budgets />
-                  </ProtectedRoute>
-                } />
-                <Route path="/reports" element={
-                  <ProtectedRoute>
-                    <Reports />
-                  </ProtectedRoute>
-                } />
-                <Route path="/goals" element={
-                  <ProtectedRoute>
-                    <Goals />
-                  </ProtectedRoute>
-                } />
-                <Route path="/settings" element={
-                  <ProtectedRoute>
-                    <Settings />
-                  </ProtectedRoute>
-                } />
-                <Route path="/loans" element={
-                  <ProtectedRoute>
-                    <Loans />
-                  </ProtectedRoute>
-                } />
-                
-                {/* 404 route */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BudgetProvider>
-          </AuthProvider>
-        </TooltipProvider>
-      </ThemeProvider>
-    </BrowserRouter>
-  </QueryClientProvider>
-);
-
-export default App;
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <ThemeProvider defaultTheme="system">
+          <TooltipProvider>
+            <AuthProvider>
+              <ProfileProvider>
+                <BudgetProvider>
+                  <Toaster />
+                  <Sonner />
+                  <Routes>
+                    {/* Public routes */}
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    
+                    {/* Protected routes */}
+                    <Route path="/" element={
+                      <ProtectedRoute>
+                        <Dashboard />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/transactions" element={
+                      <ProtectedRoute>
+                        <Transactions />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/budgets" element={
+                      <ProtectedRoute>
+                        <Budgets />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/reports" element={
+                      <ProtectedRoute>
+                        <Reports />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/goals" element={
+                      <ProtectedRoute>
+                        <Goals />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/settings" element={
+                      <ProtectedRoute>
+                        <Settings />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/loans" element={
+                      <ProtectedRoute>
+                        <Loans />
+                      </ProtectedRoute>
+                    } />
+                    
+                    {/* 404 route */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </BudgetProvider>
+              </ProfileProvider>
+            </AuthProvider>
+          </TooltipProvider>
+        </ThemeProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
+  );
+}

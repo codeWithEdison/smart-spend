@@ -1,13 +1,12 @@
-
 import { Transaction, Category, TransactionType } from '../context/BudgetContext';
 
 // Format currency amount
 export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('en-RW', {
     style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    currency: 'RWF',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   }).format(amount);
 };
 
