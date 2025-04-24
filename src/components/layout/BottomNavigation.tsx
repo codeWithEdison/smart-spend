@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { LayoutDashboard, ReceiptText, CreditCard, Settings, Landmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
