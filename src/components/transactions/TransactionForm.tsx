@@ -204,7 +204,7 @@ const TransactionForm = ({ editTransaction, onComplete }: TransactionFormProps) 
                           </SelectItem>
                         ))
                       ) : (
-                        <SelectItem value="" disabled>
+                        <SelectItem value="no-categories" disabled>
                           No categories available
                         </SelectItem>
                       )}
