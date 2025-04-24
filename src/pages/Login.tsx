@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
@@ -12,7 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { toast } from 'react-toastify';
+import { useToast } from '@/hooks/use-toast';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -34,6 +35,7 @@ const Login = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('login');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -60,7 +62,11 @@ const Login = () => {
       if (error) throw error;
     } catch (error) {
       console.error('Google sign in error:', error);
-      toast.error('Failed to sign in with Google');
+      toast({
+        title: "Sign in failed",
+        description: "Failed to sign in with Google",
+        variant: "destructive",
+      });
     }
   };
 
@@ -71,6 +77,11 @@ const Login = () => {
       navigate('/');
     } catch (error) {
       console.error('Login error:', error);
+      toast({
+        title: "Sign in failed",
+        description: "Invalid email or password",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -82,8 +93,17 @@ const Login = () => {
       await signUp(data.email, data.password);
       setActiveTab('login');
       signupForm.reset();
+      toast({
+        title: "Success",
+        description: "Account created successfully. Please sign in.",
+      });
     } catch (error) {
       console.error('Signup error:', error);
+      toast({
+        title: "Sign up failed",
+        description: "There was an error creating your account",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
