@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useBudget, Transaction } from '@/context/BudgetContext';
 import { formatCurrency, formatDate, getTransactionIconClass } from '@/utils/budgetUtils';
-import { ArrowDownRight, ArrowUpRight, Search, Trash2 } from 'lucide-react';
+import { ArrowDownRight, ArrowUpRight, Search, Trash2, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -20,7 +20,7 @@ import {
 import TransactionForm from './TransactionForm';
 
 const TransactionList = () => {
-  const { transactions, deleteTransaction } = useBudget();
+  const { transactions, isTransactionsLoading, deleteTransaction } = useBudget();
   const [searchTerm, setSearchTerm] = useState('');
   
   // Filter transactions based on search term
@@ -35,9 +35,14 @@ const TransactionList = () => {
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
   
-  const handleDelete = (transaction: Transaction) => {
-    deleteTransaction(transaction.id);
-    toast.success('Transaction deleted successfully');
+  const handleDelete = async (transaction: Transaction) => {
+    try {
+      await deleteTransaction(transaction.id);
+      toast.success('Transaction deleted successfully');
+    } catch (error) {
+      toast.error('Error deleting transaction');
+      console.error(error);
+    }
   };
   
   return (
@@ -56,7 +61,12 @@ const TransactionList = () => {
       </div>
       
       <div className="bg-card rounded-lg border shadow-sm">
-        {sortedTransactions.length > 0 ? (
+        {isTransactionsLoading ? (
+          <div className="flex flex-col items-center justify-center p-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
+            <p className="text-muted-foreground">Loading transactions...</p>
+          </div>
+        ) : sortedTransactions.length > 0 ? (
           <div className="divide-y">
             {sortedTransactions.map((transaction) => (
               <div 

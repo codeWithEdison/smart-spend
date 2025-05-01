@@ -1,7 +1,9 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { BudgetProvider } from "@/context/BudgetContext";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
@@ -19,7 +21,16 @@ import Loans from "./pages/Loans";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 
-const queryClient = new QueryClient();
+// Create a client with default settings
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      retry: 1,
+      refetchOnWindowFocus: true,
+    },
+  },
+});
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -98,6 +109,7 @@ export default function App() {
           </TooltipProvider>
         </ThemeProvider>
       </BrowserRouter>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }

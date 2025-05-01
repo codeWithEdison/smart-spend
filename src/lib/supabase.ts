@@ -6,7 +6,13 @@ const supabaseUrl = "https://qpyrqtpavtcpltkksvvp.supabase.co";
 const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFweXJxdHBhdnRjcGx0a2tzdnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUxNzExNTgsImV4cCI6MjA2MDc0NzE1OH0.h1uoFRyDl6OTOkWIHxSHpSzxrJtJi1PmDybL1UrJLVw";
 
 // Create the Supabase client with the credentials
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storage: localStorage,
+    persistSession: true,
+    autoRefreshToken: true,
+  }
+});
 
 // Helper types for Supabase tables
 export type Tables = {

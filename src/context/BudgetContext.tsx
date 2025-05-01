@@ -1,4 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { fetchTransactions, addTransaction as apiAddTransaction, updateTransaction as apiUpdateTransaction, deleteTransaction as apiDeleteTransaction } from '@/services/transactionService';
+import { fetchCategories, addCategory as apiAddCategory, updateCategory as apiUpdateCategory, deleteCategory as apiDeleteCategory } from '@/services/categoryService';
 
 // Define types
 export type TransactionType = 'income' | 'expense';
@@ -45,15 +48,17 @@ export interface Payment {
 interface BudgetContextType {
   // Transactions
   transactions: Transaction[];
+  isTransactionsLoading: boolean;
   categories: Category[];
-  addTransaction: (transaction: Omit<Transaction, 'id'>) => void;
-  updateTransaction: (transaction: Transaction) => void;
-  deleteTransaction: (id: string) => void;
+  isCategoriesLoading: boolean;
+  addTransaction: (transaction: Omit<Transaction, 'id'>) => Promise<void>;
+  updateTransaction: (transaction: Transaction) => Promise<void>;
+  deleteTransaction: (id: string) => Promise<void>;
   
   // Categories
-  addCategory: (category: Omit<Category, 'id'>) => void;
-  updateCategory: (category: Category) => void;
-  deleteCategory: (id: string) => void;
+  addCategory: (category: Omit<Category, 'id'>) => Promise<void>;
+  updateCategory: (category: Category) => Promise<void>;
+  deleteCategory: (id: string) => Promise<void>;
   
   // Stats
   totalIncome: number;
@@ -164,9 +169,78 @@ const sampleLoans: Loan[] = [
 ];
 
 export const BudgetProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loans, setLoans] = useState<Loan[]>([]);
+  const queryClient = useQueryClient();
+  
+  // Transactions query
+  const { 
+    data: transactions = [],
+    isLoading: isTransactionsLoading
+  } = useQuery({
+    queryKey: ['transactions'],
+    queryFn: fetchTransactions,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+  
+  // Categories query
+  const {
+    data: categories = [],
+    isLoading: isCategoriesLoading
+  } = useQuery({
+    queryKey: ['categories'],
+    queryFn: fetchCategories,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  });
+  
+  // Add transaction mutation
+  const addTransactionMutation = useMutation({
+    mutationFn: apiAddTransaction,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+    }
+  });
+  
+  // Update transaction mutation
+  const updateTransactionMutation = useMutation({
+    mutationFn: apiUpdateTransaction,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+    }
+  });
+  
+  // Delete transaction mutation
+  const deleteTransactionMutation = useMutation({
+    mutationFn: apiDeleteTransaction,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+    }
+  });
+  
+  // Add category mutation
+  const addCategoryMutation = useMutation({
+    mutationFn: apiAddCategory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+    }
+  });
+  
+  // Update category mutation
+  const updateCategoryMutation = useMutation({
+    mutationFn: apiUpdateCategory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+    }
+  });
+  
+  // Delete category mutation
+  const deleteCategoryMutation = useMutation({
+    mutationFn: apiDeleteCategory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+    }
+  });
+  
+  // For now, we'll keep loans in local state until we implement loan services
+  const [loans, setLoans] = React.useState<Loan[]>([]);
   
   // Calculate derived values for transactions
   const totalIncome = transactions
@@ -196,83 +270,30 @@ export const BudgetProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       return sum + (loan.amount - paidAmount);
     }, 0);
 
-  // Load data from localStorage on initial render
-  useEffect(() => {
-    const storedTransactions = localStorage.getItem('transactions');
-    const storedCategories = localStorage.getItem('categories');
-    const storedLoans = localStorage.getItem('loans');
-    
-    if (storedTransactions) {
-      setTransactions(JSON.parse(storedTransactions));
-    } else {
-      // Use sample data for demo
-      setTransactions(sampleTransactions);
-    }
-    
-    if (storedCategories) {
-      setCategories(JSON.parse(storedCategories));
-    } else {
-      // Use default categories
-      setCategories(defaultCategories);
-    }
-    
-    if (storedLoans) {
-      setLoans(JSON.parse(storedLoans));
-    } else {
-      // Use sample loans
-      setLoans(sampleLoans);
-    }
-  }, []);
-
-  // Save data to localStorage when it changes
-  useEffect(() => {
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-  }, [transactions]);
-  
-  useEffect(() => {
-    localStorage.setItem('categories', JSON.stringify(categories));
-  }, [categories]);
-  
-  useEffect(() => {
-    localStorage.setItem('loans', JSON.stringify(loans));
-  }, [loans]);
-
   // Transaction CRUD operations
-  const addTransaction = (transaction: Omit<Transaction, 'id'>) => {
-    const newTransaction = {
-      ...transaction,
-      id: Date.now().toString(),
-    };
-    setTransactions(prev => [...prev, newTransaction]);
+  const addTransaction = async (transaction: Omit<Transaction, 'id'>) => {
+    await addTransactionMutation.mutateAsync(transaction);
   };
 
-  const updateTransaction = (transaction: Transaction) => {
-    setTransactions(prev => 
-      prev.map(t => t.id === transaction.id ? transaction : t)
-    );
+  const updateTransaction = async (transaction: Transaction) => {
+    await updateTransactionMutation.mutateAsync(transaction);
   };
 
-  const deleteTransaction = (id: string) => {
-    setTransactions(prev => prev.filter(t => t.id !== id));
+  const deleteTransaction = async (id: string) => {
+    await deleteTransactionMutation.mutateAsync(id);
   };
 
   // Category CRUD operations
-  const addCategory = (category: Omit<Category, 'id'>) => {
-    const newCategory = {
-      ...category,
-      id: Date.now().toString(),
-    };
-    setCategories(prev => [...prev, newCategory]);
+  const addCategory = async (category: Omit<Category, 'id'>) => {
+    await addCategoryMutation.mutateAsync(category);
   };
 
-  const updateCategory = (category: Category) => {
-    setCategories(prev => 
-      prev.map(c => c.id === category.id ? category : c)
-    );
+  const updateCategory = async (category: Category) => {
+    await updateCategoryMutation.mutateAsync(category);
   };
 
-  const deleteCategory = (id: string) => {
-    setCategories(prev => prev.filter(c => c.id !== id));
+  const deleteCategory = async (id: string) => {
+    await deleteCategoryMutation.mutateAsync(id);
   };
   
   // Loan CRUD operations
@@ -316,8 +337,9 @@ export const BudgetProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   const value = {
     transactions,
+    isTransactionsLoading,
     categories,
-    loans,
+    isCategoriesLoading,
     addTransaction,
     updateTransaction,
     deleteTransaction,
@@ -332,7 +354,8 @@ export const BudgetProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     totalExpenses,
     savingsRate,
     totalBorrowed,
-    totalLent
+    totalLent,
+    loans
   };
 
   return (

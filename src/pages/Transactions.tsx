@@ -7,8 +7,11 @@ const Transactions = () => {
   return (
     <Layout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div>
           <h1 className="text-2xl font-bold tracking-tight">Transactions</h1>
+          <p className="text-muted-foreground">
+            Manage your income and expenses
+          </p>
         </div>
         
         <TransactionList />

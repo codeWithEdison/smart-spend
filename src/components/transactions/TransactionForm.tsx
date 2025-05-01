@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Dialog, 
   DialogContent, 
@@ -31,7 +31,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { CalendarIcon, Plus } from 'lucide-react';
+import { CalendarIcon, Plus, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -54,7 +54,7 @@ interface TransactionFormValues {
 
 const TransactionForm = ({ editTransaction, onComplete }: TransactionFormProps) => {
   const [open, setOpen] = useState(false);
-  const { categories, addTransaction, updateTransaction } = useBudget();
+  const { categories, isCategoriesLoading, addTransaction, updateTransaction } = useBudget();
   
   // Create default values with the right types
   const defaultValues: TransactionFormValues = editTransaction 
@@ -82,14 +82,7 @@ const TransactionForm = ({ editTransaction, onComplete }: TransactionFormProps) 
   // Filter categories based on transaction type
   const filteredCategories = categories.filter(c => c.type === transactionType);
   
-  // Log to debug
-  useEffect(() => {
-    console.log('All categories:', categories);
-    console.log('Filtered categories:', filteredCategories);
-    console.log('Current transaction type:', transactionType);
-  }, [categories, filteredCategories, transactionType]);
-  
-  const onSubmit = (data: TransactionFormValues) => {
+  const onSubmit = async (data: TransactionFormValues) => {
     try {
       const transactionData = {
         ...data,
@@ -98,18 +91,17 @@ const TransactionForm = ({ editTransaction, onComplete }: TransactionFormProps) 
       };
       
       if (editTransaction) {
-        updateTransaction({
+        await updateTransaction({
           ...transactionData,
           id: editTransaction.id
         });
         toast.success('Transaction updated successfully');
       } else {
-        addTransaction(transactionData);
+        await addTransaction(transactionData);
         toast.success('Transaction added successfully');
       }
       
       setOpen(false);
-      // Reset with correct types
       form.reset(defaultValues);
       
       if (onComplete) {
@@ -197,14 +189,22 @@ const TransactionForm = ({ editTransaction, onComplete }: TransactionFormProps) 
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value}
+                    disabled={isCategoriesLoading}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select category" />
+                        {isCategoriesLoading ? (
+                          <div className="flex items-center gap-2">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span>Loading categories...</span>
+                          </div>
+                        ) : (
+                          <SelectValue placeholder="Select category" />
+                        )}
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {filteredCategories && filteredCategories.length > 0 ? (
+                      {!isCategoriesLoading && filteredCategories && filteredCategories.length > 0 ? (
                         filteredCategories.map(category => (
                           <SelectItem key={category.id} value={category.name}>
                             {category.name}
@@ -212,7 +212,7 @@ const TransactionForm = ({ editTransaction, onComplete }: TransactionFormProps) 
                         ))
                       ) : (
                         <SelectItem value="no-categories" disabled>
-                          No categories available
+                          {isCategoriesLoading ? "Loading categories..." : "No categories available"}
                         </SelectItem>
                       )}
                     </SelectContent>
@@ -276,8 +276,17 @@ const TransactionForm = ({ editTransaction, onComplete }: TransactionFormProps) 
             />
             
             <DialogFooter className="pt-2">
-              <Button type="submit">
-                {editTransaction ? 'Update' : 'Add'} Transaction
+              <Button type="submit" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    {editTransaction ? 'Update' : 'Add'} Transaction
+                  </>
+                )}
               </Button>
             </DialogFooter>
           </form>
